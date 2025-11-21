@@ -15,20 +15,26 @@ public class Obra {
     @Column(name = "ID")
     private Long id;
 
-    // NOVO: campo para CODIGO_OBRA
     @Column(name = "CODIGO_OBRA", nullable = false, length = 30)
     private String codigoObra;
 
-    @Column(name = "NOME_OBRA", nullable = false, length = 100)
+    @Column(name = "NOME_OBRA", nullable = false, length = 120)
     private String nome;
 
     @Column(name = "CNPJ", nullable = false, length = 14)
     private String cnpj;
 
     @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "logradouro", column = @Column(name = "LOGRADOURO")),
+            @AttributeOverride(name = "numero",     column = @Column(name = "NUMERO")),
+            @AttributeOverride(name = "cidade",     column = @Column(name = "CIDADE")),
+            @AttributeOverride(name = "estado",     column = @Column(name = "ESTADO")),
+            @AttributeOverride(name = "cep",        column = @Column(name = "CEP"))
+    })
     private EnderecoObra endereco;
 
-    @Column(name = "DATA_INICIO")
+    @Column(name = "DATA_INICIO", nullable = false)
     private LocalDate dataInicio;
 
     @Column(name = "DATA_FIM")
@@ -40,21 +46,27 @@ public class Obra {
     public Obra() {
     }
 
-    public Obra(String nome, String cnpj, EnderecoObra endereco,
-                LocalDate dataInicio, LocalDate dataFim, boolean ativa) {
+    public Obra(String nome,
+                String cnpj,
+                EnderecoObra endereco,
+                LocalDate dataInicio,
+                LocalDate dataFim,
+                boolean ativa) {
+
         this.nome = nome;
         this.cnpj = cnpj;
         this.endereco = endereco;
-        this.dataInicio = dataInicio;
+
+        // 👇 se vier null, força a data de hoje pra não quebrar o NOT NULL
+        this.dataInicio = (dataInicio != null) ? dataInicio : LocalDate.now();
+
         this.dataFim = dataFim;
         this.ativa = ativa ? "S" : "N";
     }
 
-    // Gera um código automaticamente se vier nulo
     @PrePersist
     public void prePersist() {
         if (codigoObra == null || codigoObra.isBlank()) {
-            // algo simples e único o suficiente para o trabalho
             this.codigoObra = "OBR-" + System.currentTimeMillis();
         }
     }
@@ -104,7 +116,7 @@ public class Obra {
     }
 
     public void setDataInicio(LocalDate dataInicio) {
-        this.dataInicio = dataInicio;
+        this.dataInicio = (dataInicio != null) ? dataInicio : LocalDate.now();
     }
 
     public void setDataFim(LocalDate dataFim) {
@@ -115,7 +127,6 @@ public class Obra {
         this.ativa = ativa ? "S" : "N";
     }
 
-    // Se quiser, pode ter um setter de codigoObra, mas não é obrigatório
     public void setCodigoObra(String codigoObra) {
         this.codigoObra = codigoObra;
     }
