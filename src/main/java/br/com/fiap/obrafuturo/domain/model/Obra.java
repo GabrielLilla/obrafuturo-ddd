@@ -15,7 +15,10 @@ public class Obra {
     @Column(name = "ID")
     private Long id;
 
-    // Mapeia para a coluna NOME_OBRA da tabela
+    // NOVO: campo para CODIGO_OBRA
+    @Column(name = "CODIGO_OBRA", nullable = false, length = 30)
+    private String codigoObra;
+
     @Column(name = "NOME_OBRA", nullable = false, length = 100)
     private String nome;
 
@@ -31,7 +34,6 @@ public class Obra {
     @Column(name = "DATA_FIM")
     private LocalDate dataFim;
 
-    // Coluna ATIVA (NUMBER(1)) – vamos continuar gravando "S"/"N"
     @Column(name = "ATIVA")
     private String ativa; // 'S' ou 'N'
 
@@ -48,8 +50,21 @@ public class Obra {
         this.ativa = ativa ? "S" : "N";
     }
 
+    // Gera um código automaticamente se vier nulo
+    @PrePersist
+    public void prePersist() {
+        if (codigoObra == null || codigoObra.isBlank()) {
+            // algo simples e único o suficiente para o trabalho
+            this.codigoObra = "OBR-" + System.currentTimeMillis();
+        }
+    }
+
     public Long getId() {
         return id;
+    }
+
+    public String getCodigoObra() {
+        return codigoObra;
     }
 
     public String getNome() {
@@ -98,5 +113,10 @@ public class Obra {
 
     public void setAtiva(boolean ativa) {
         this.ativa = ativa ? "S" : "N";
+    }
+
+    // Se quiser, pode ter um setter de codigoObra, mas não é obrigatório
+    public void setCodigoObra(String codigoObra) {
+        this.codigoObra = codigoObra;
     }
 }
