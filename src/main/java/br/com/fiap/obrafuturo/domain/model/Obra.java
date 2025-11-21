@@ -12,12 +12,14 @@ public class Obra {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SQ_OBRA")
     @SequenceGenerator(name = "SQ_OBRA", sequenceName = "SQ_OBRA", allocationSize = 1)
+    @Column(name = "ID")
     private Long id;
 
-    @Column(nullable = false, length = 100)
+    // Mapeia para a coluna NOME_OBRA da tabela
+    @Column(name = "NOME_OBRA", nullable = false, length = 100)
     private String nome;
 
-    @Column(nullable = false, length = 14)
+    @Column(name = "CNPJ", nullable = false, length = 14)
     private String cnpj;
 
     @Embedded
@@ -29,6 +31,7 @@ public class Obra {
     @Column(name = "DATA_FIM")
     private LocalDate dataFim;
 
+    // Coluna ATIVA (NUMBER(1)) – vamos continuar gravando "S"/"N"
     @Column(name = "ATIVA")
     private String ativa; // 'S' ou 'N'
 
