@@ -40,8 +40,11 @@ public class Obra {
     @Column(name = "DATA_FIM")
     private LocalDate dataFim;
 
+    @Column(name = "STATUS_OBRA", nullable = false, length = 20)
+    private String statusObra;
+
     @Column(name = "ATIVA")
-    private String ativa; // 'S' ou 'N'
+    private Integer ativa; // 1 = ativa, 0 = inativa
 
     public Obra() {
     }
@@ -56,12 +59,10 @@ public class Obra {
         this.nome = nome;
         this.cnpj = cnpj;
         this.endereco = endereco;
-
-        // 👇 se vier null, força a data de hoje pra não quebrar o NOT NULL
         this.dataInicio = (dataInicio != null) ? dataInicio : LocalDate.now();
-
         this.dataFim = dataFim;
-        this.ativa = ativa ? "S" : "N";
+        this.statusObra = "EM_ANDAMENTO";
+        this.ativa = ativa ? 1 : 0;
     }
 
     @PrePersist
@@ -69,7 +70,18 @@ public class Obra {
         if (codigoObra == null || codigoObra.isBlank()) {
             this.codigoObra = "OBR-" + System.currentTimeMillis();
         }
+        if (statusObra == null || statusObra.isBlank()) {
+            this.statusObra = "EM_ANDAMENTO";
+        }
+        if (dataInicio == null) {
+            this.dataInicio = LocalDate.now();
+        }
+        if (ativa == null) {
+            this.ativa = 1; // por padrão, ativa
+        }
     }
+
+    // GETTERS
 
     public Long getId() {
         return id;
@@ -99,8 +111,18 @@ public class Obra {
         return dataFim;
     }
 
+    public String getStatusObra() {
+        return statusObra;
+    }
+
     public boolean isAtiva() {
-        return "S".equalsIgnoreCase(ativa);
+        return ativa != null && ativa == 1;
+    }
+
+    // SETTERS
+
+    public void setCodigoObra(String codigoObra) {
+        this.codigoObra = codigoObra;
     }
 
     public void setNome(String nome) {
@@ -123,11 +145,11 @@ public class Obra {
         this.dataFim = dataFim;
     }
 
-    public void setAtiva(boolean ativa) {
-        this.ativa = ativa ? "S" : "N";
+    public void setStatusObra(String statusObra) {
+        this.statusObra = statusObra;
     }
 
-    public void setCodigoObra(String codigoObra) {
-        this.codigoObra = codigoObra;
+    public void setAtiva(boolean ativa) {
+        this.ativa = ativa ? 1 : 0;
     }
 }
